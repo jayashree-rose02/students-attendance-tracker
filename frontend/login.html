@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teacher Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="center">
+    <div class="card">
+        <h2>🎓 Teacher Login</h2>
+
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+
+        <button onclick="login()">Login</button>
+
+        <p id="msg"></p>
+    </div>
+</div>
+
+<script>
+async function login() {
+
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+
+  const msg = document.getElementById("msg");
+  msg.innerText = "Logging in...";
+
+  try {
+
+    // ✅ FIXED ROUTE HERE
+    const res = await fetch("http://localhost:5000/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ username, password })
+    });
+
+    const data = await res.json();
+
+    console.log("LOGIN RESPONSE:", data);
+
+    // ✅ CHECK TOKEN
+    if (data.token) {
+
+      localStorage.setItem("token", data.token);
+
+      msg.innerText = "Login Successful";
+
+      setTimeout(() => {
+        window.location.href = "dashboard.html";
+      }, 500);
+
+    } else {
+
+      msg.innerText = data.message || "Login Failed";
+
+    }
+
+  } catch (err) {
+
+    console.error(err);
+
+    msg.innerText = "Server not responding";
+
+  }
+}
+</script>
+
+</body>
+</html>
